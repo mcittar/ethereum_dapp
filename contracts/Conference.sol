@@ -2,7 +2,7 @@ pragma solidity ^0.4.4;
 
 contract Conference {
   address public organizer;
-  mapping (address => uint) registrantsPaid;
+  mapping (address => uint) public registrantsPaid;
   uint public numRegistrants;
   uint public quota;
 

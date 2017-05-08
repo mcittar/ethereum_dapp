@@ -39,7 +39,7 @@ contract('Conference', function(accounts) {
           }).catch(done);
       }).catch(done);
   });
-  
+
   it("Should let you buy a ticket", function(done) {
     Conference.new({ from: accounts[0] }).then(
       function(conference) {
