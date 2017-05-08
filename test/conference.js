@@ -72,14 +72,12 @@ contract('Conference', function(accounts) {
           function() {
             var newBalance = web3.eth.getBalance(conference.address).toNumber();
             var difference = newBalance - initialBalance;
-            assert.equal(difference, ticketPrice, "Difference should be what was sent");  // same as before up to here
-            // Now try to issue refund as second user - should fail
+            assert.equal(difference, ticketPrice, "Difference should be what was sent");
             return conference.refundTicket(accounts[1], ticketPrice, {from: accounts[1]});
           }).then(
             function() {
               var balance = web3.eth.getBalance(conference.address).toNumber();
               assert.equal(web3.toBigNumber(balance), ticketPrice, "Balance should be unchanged");
-              // Now try to issue refund as organizer/owner - should work
               return conference.refundTicket(accounts[1], ticketPrice, {from: accounts[0]});
           }).then(
             function() {
