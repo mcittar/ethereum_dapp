@@ -13,6 +13,7 @@ class Container extends React.Component {
     };
     this.changeQuota = this.changeQuota.bind(this);
     this.update = this.update.bind(this);
+    this.buyTicket = this.buyTicket.bind(this);
   }
 
   componentWillMount(){
@@ -22,7 +23,11 @@ class Container extends React.Component {
     this.props.Conference.organizer.call().then((organizer) => {
       this.setState({ organizer });
     });
-    this.props.Conference.numRegistrants.call().then((registrants) => {
+    this.getRegistrants();
+  }
+
+  getRegistrants(){
+    return this.props.Conference.numRegistrants.call().then((registrants) => {
       this.setState({ registrants: registrants.toNumber() });
     });
   }
@@ -48,7 +53,33 @@ class Container extends React.Component {
     this.setState({ newQuota: parseInt(event.currentTarget.value) });
   }
 
+  buyTicket(buyerAddress, ticketPrice) {
+	  this.props.Conference.buyTicket(
+      { from: "0xacac4d1ba451a9c18d88f96bb8758199537d1a64", value: ticketPrice }).then(() => {
+			this.getRegistrants();
+		}).then(
+		function(num) {
+      console.log("worked?");
+			return this.props.Conference.registrantsPaid.call(buyerAddress);
+		}).then(
+		function(valuePaid) {
+			var msgResult;
+			if (valuePaid.toNumber() == ticketPrice) {
+				msgResult = "Purchase successful";
+			} else {
+				msgResult = "Purchase failed";
+			}
+			$("#buyTicketResult").html(msgResult);
+		});
+}
+
   render() {
+    let options;
+    if (this.props.accounts){
+      options = this.props.accounts.slice(1).map(account => {
+        return <option key={account}>{ account }</option>;
+      });
+    }
     return (
       <div className='app'>
         { this.props.Conference.address }<br></br>
@@ -57,7 +88,9 @@ class Container extends React.Component {
         { this.state.registrants }<br></br>
         { this.state.msgResult }
         <input onChange={ this.update }></input>
-        <button onClick={ this.changeQuota }>Update Value</button>
+        <button onClick={ this.changeQuota }>Update Value</button><br></br>
+        <select>{ options }</select>
+        <button onClick={ this.buyTicket }>Buy Ticket</button>
       </div>
     );
   }

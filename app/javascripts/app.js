@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
       new Web3.providers.HttpProvider("http://localhost:8545")
     );
   }
+  
   Conference.setProvider(web3.currentProvider);
   var accounts = web3.eth.accounts;
   var ticketPrice = web3.toWei(.05, 'ether');
