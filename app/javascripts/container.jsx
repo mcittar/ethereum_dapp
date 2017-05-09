@@ -7,24 +7,23 @@ class Container extends React.Component {
     this.state = {
       quota: 500,
       msgResult: "",
-      newQuota: 500
+      newQuota: "",
+      organizer: "",
+      registrants: 0
     };
     this.changeQuota = this.changeQuota.bind(this);
     this.update = this.update.bind(this);
-    this.props.Conference.quota.call().then((quota) => {
-      // console.log(quota.toNumber());
-      return this.props.Conference.organizer.call();
-  }).then((organizer) => {
-      // console.log(organizer);
-      return this.props.Conference.numRegistrants.call();
-  }).then((num) => {
-      // console.log(num.toNumber());
-  });
   }
 
-  componentDidMount(){
+  componentWillMount(){
     this.props.Conference.quota.call().then((quota) => {
       this.setState({ quota: quota.toNumber() });
+    });
+    this.props.Conference.organizer.call().then((organizer) => {
+      this.setState({ organizer });
+    });
+    this.props.Conference.numRegistrants.call().then((registrants) => {
+      this.setState({ registrants: registrants.toNumber() });
     });
   }
 
@@ -53,10 +52,12 @@ class Container extends React.Component {
     return (
       <div className='app'>
         { this.props.Conference.address }<br></br>
-        { this.state.quota }
+        { this.state.quota }<br></br>
+        { this.state.organizer }<br></br>
+        { this.state.registrants }<br></br>
         { this.state.msgResult }
         <input onChange={ this.update }></input>
-        <button onClick={ this.changeQuota }></button>
+        <button onClick={ this.changeQuota }>Update Value</button>
       </div>
     );
   }
