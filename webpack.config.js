@@ -13,13 +13,10 @@ module.exports = {
       { from: './app/index.html', to: "index.html" }
     ])
   ],
+  resolve: {
+    extensions: ['.js', '.jsx', '*']
+  },
   module: {
-    rules: [
-      {
-       test: /\.css$/,
-       use: [ 'style-loader', 'css-loader' ]
-      }
-    ],
     loaders: [
       { test: /\.json$/, use: 'json-loader' },
       {
@@ -30,7 +27,15 @@ module.exports = {
           presets: ['react', 'es2015'],
           plugins: ['transform-runtime']
         }
+      },
+      {
+        test: /\.jsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: 'babel-loader',
+        query: {
+          presets: ['react', 'es2015']
+        }
       }
     ]
   }
-}
+};
