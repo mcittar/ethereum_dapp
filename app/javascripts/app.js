@@ -21,13 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   Conference.setProvider(web3.currentProvider);
   var accounts = web3.eth.accounts;
+  var ticketPrice = web3.toWei(.05, 'ether');
 
   Conference.new({ from: accounts[0], gas: 4712388 }).then(
     function(conference) {
     conferenceContract = conference;
     const root = document.getElementById('root');
-    ReactDOM.render(<Container Conference={ conferenceContract } />, root);
-    var ticketPrice = web3.toWei(.05, 'ether');
+    ReactDOM.render(<Container accounts={ accounts }
+      Conference={ conferenceContract } />, root);
     var initialBalance = web3.eth.getBalance(conference.address).toNumber();
   });
 
