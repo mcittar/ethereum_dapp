@@ -100,6 +100,43 @@ class Container extends React.Component {
     });
   }
 
+  createWallet(password) {
+
+	var msgResult;
+
+	var secretSeed = lightwallet.keystore.generateRandomSeed();
+
+	$("#seed").html(secretSeed);
+
+	lightwallet.keystore.deriveKeyFromPassword(password, function (err, pwDerivedKey) {
+
+		console.log("createWallet");
+
+		var keystore = new lightwallet.keystore(secretSeed, pwDerivedKey);
+
+		// generate one new address/private key pairs
+		// the corresponding private keys are also encrypted
+		keystore.generateNewAddress(pwDerivedKey);
+
+		var address = keystore.getAddresses()[0];
+
+		var privateKey = keystore.exportPrivateKey(address, pwDerivedKey);
+
+		console.log(address);
+
+		$("#wallet").html("0x"+address);
+		$("#privateKey").html(privateKey);
+		$("#balance").html(getBalance(address));
+
+
+		// Now set ks as transaction_signer in the hooked web3 provider
+		// and you can start using web3 using the keys/addresses in ks!
+		switchToHooked3(keystore);
+
+	});
+}
+
+
   render() {
     let options;
     if (this.props.accounts){
