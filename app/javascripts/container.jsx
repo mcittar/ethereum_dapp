@@ -10,12 +10,14 @@ class Container extends React.Component {
       newQuota: "",
       organizer: "",
       registrants: 0,
-      ticketBuyer: this.props.accounts[1]
+      ticketBuyer: this.props.accounts[1],
+      ticketRefunder: this.props.accounts[1]
     };
     this.changeQuota = this.changeQuota.bind(this);
     this.update = this.update.bind(this);
     this.buyTicket = this.buyTicket.bind(this);
-    this.updateTicketBuyer = this.updateTicketBuyer.bind(this);
+    this.updateTicket = this.updateTicket.bind(this);
+    this.refundTicket = this.refundTicket.bind(this);
   }
 
   componentWillMount(){
@@ -37,13 +39,11 @@ class Container extends React.Component {
   			return this.props.Conference.quota.call();
   		}).then((quota) => {
   			if (quota.toNumber() === this.state.newQuota) {
-  				var msgResult;
-  				msgResult = "Change successful";
+  				this.setState({ msgResult: "Change successful" });
           this.setState({ quota: quota.toNumber() });
   			} else {
-  				msgResult = "Change failed";
+  				this.setState({ msgResult: "Change failed" });
   			}
-  			this.setState({ msgResult });
 		});
   }
 
@@ -51,14 +51,16 @@ class Container extends React.Component {
     this.setState({ newQuota: parseInt(event.currentTarget.value) });
   }
 
-  updateTicketBuyer(event){
-    this.setState({ ticketBuyer: event.currentTarget.value });
+  updateTicket(attribute){
+    return (event) => {
+      this.setState({ [attribute]: event.currentTarget.value });
+    };
   }
 
   buyTicket() {
 	  this.props.Conference.buyTicket(
       { from: this.state.ticketBuyer,
-        value: this.props.ticketPrice })
+        value: this.props.ticketPrice } )
     .then(() => this.props.Conference.numRegistrants.call()
     .then(registrants => {
       this.setState({ registrants: registrants.toNumber() });
@@ -68,6 +70,32 @@ class Container extends React.Component {
         this.setState({ msgResult: "Purchase successful" });
       } else {
         this.setState({ msgResult: "Purchase failed" });
+      }
+    });
+  }
+
+  refundTicket() {
+    this.props.Conference.registrantsPaid.call(this.state.ticketRefunder)
+    .then(result => {
+      if (result.toNumber() === 0) {
+        this.setState({ msgResult: "Buyer is not registered - no refund!" });
+      } else {
+        this.props.Conference.refundTicket(this.state.ticketRefunder,
+          this.props.ticketPrice,
+        { from: this.props.accounts[0]} ).then(() => {
+          return this.props.Conference.numRegistrants.call();
+        }).then(num => {
+          this.setState({ registrants: num.toNumber() });
+          return this.props.Conference.registrantsPaid.call(
+            this.state.ticketRefunder
+          );
+        }).then(valuePaid => {
+          if (valuePaid.toNumber() === 0) {
+          this.setState({ msgResult: "Refund Successful" });
+          } else {
+            this.setState({ msgResult: "Refund failed" });
+          }
+        });
       }
     });
   }
@@ -88,11 +116,16 @@ class Container extends React.Component {
         { this.state.msgResult }
         <input onChange={ this.update }></input>
         <button onClick={ this.changeQuota }>Update Value</button><br></br>
-        <select onChange={ this.updateTicketBuyer }
+        <select onChange={ this.updateTicket("ticketBuyer") }
                 value={ this.state.ticketBuyer }>
                 { options }
         </select>
-        <button onClick={ this.buyTicket }>Buy Ticket</button>
+        <button onClick={ this.buyTicket }>Buy Ticket</button><br></br>
+        <select onChange={ this.updateTicket("ticketRefunder") }
+                value={ this.state.ticketRefunder }>
+                { options }
+        </select>
+        <button onClick={ this.refundTicket }>Refund Ticket</button><br></br>
       </div>
     );
   }
