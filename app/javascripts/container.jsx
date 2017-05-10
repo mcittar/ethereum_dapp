@@ -9,11 +9,13 @@ class Container extends React.Component {
       msgResult: "",
       newQuota: "",
       organizer: "",
-      registrants: 0
+      registrants: 0,
+      ticketBuyer: this.props.accounts[1]
     };
     this.changeQuota = this.changeQuota.bind(this);
     this.update = this.update.bind(this);
     this.buyTicket = this.buyTicket.bind(this);
+    this.updateTicketBuyer = this.updateTicketBuyer.bind(this);
   }
 
   componentWillMount(){
@@ -23,11 +25,7 @@ class Container extends React.Component {
     this.props.Conference.organizer.call().then((organizer) => {
       this.setState({ organizer });
     });
-    this.getRegistrants();
-  }
-
-  getRegistrants(){
-    return this.props.Conference.numRegistrants.call().then((registrants) => {
+    this.props.Conference.numRegistrants.call().then((registrants) => {
       this.setState({ registrants: registrants.toNumber() });
     });
   }
@@ -53,31 +51,32 @@ class Container extends React.Component {
     this.setState({ newQuota: parseInt(event.currentTarget.value) });
   }
 
-  buyTicket(buyerAddress, ticketPrice) {
+  updateTicketBuyer(event){
+    this.setState({ ticketBuyer: event.currentTarget.value });
+  }
+
+  buyTicket() {
 	  this.props.Conference.buyTicket(
-      { from: "0xacac4d1ba451a9c18d88f96bb8758199537d1a64", value: ticketPrice }).then(() => {
-			this.getRegistrants();
-		}).then(
-		function(num) {
-      console.log("worked?");
-			return this.props.Conference.registrantsPaid.call(buyerAddress);
-		}).then(
-		function(valuePaid) {
-			var msgResult;
-			if (valuePaid.toNumber() == ticketPrice) {
-				msgResult = "Purchase successful";
-			} else {
-				msgResult = "Purchase failed";
-			}
-			$("#buyTicketResult").html(msgResult);
-		});
-}
+      { from: this.state.ticketBuyer,
+        value: this.props.ticketPrice })
+    .then(() => this.props.Conference.numRegistrants.call()
+    .then(registrants => {
+      this.setState({ registrants: registrants.toNumber() });
+      return this.props.Conference.registrantsPaid.call(this.state.ticketBuyer);
+    })).then(valuePaid => {
+      if (valuePaid.toNumber() === parseInt(this.props.ticketPrice)) {
+        this.setState({ msgResult: "Purchase successful" });
+      } else {
+        this.setState({ msgResult: "Purchase failed" });
+      }
+    });
+  }
 
   render() {
     let options;
     if (this.props.accounts){
       options = this.props.accounts.slice(1).map(account => {
-        return <option key={account}>{ account }</option>;
+        return <option key={ account } value={ account }>{ account }</option>;
       });
     }
     return (
@@ -89,7 +88,10 @@ class Container extends React.Component {
         { this.state.msgResult }
         <input onChange={ this.update }></input>
         <button onClick={ this.changeQuota }>Update Value</button><br></br>
-        <select>{ options }</select>
+        <select onChange={ this.updateTicketBuyer }
+                value={ this.state.ticketBuyer }>
+                { options }
+        </select>
         <button onClick={ this.buyTicket }>Buy Ticket</button>
       </div>
     );
