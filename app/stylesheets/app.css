@@ -2,14 +2,14 @@
 html, body, header, nav, h1, a,
 ul, li, strong, main, button, i,
 section, img, div, h2, p, form,
-fieldset, label, input, textarea, select
+fieldset, label, input, textarea, select,
 span, article, footer, time, small, h3, h4, h5 {
   margin: 0;
   padding: 0;
   border: 0;
   outline: 0;
   font: inherit;
-  color: $darker-gray;
+  color: inherit;
   text-align: inherit;
   text-decoration: inherit;
   vertical-align: inherit;
@@ -28,9 +28,10 @@ html, body {
 }
 
 .app {
+  color: #fbfaf8;
+  background-color: #101010;
   display: flex;
   flex-direction: column;
-  /*justify-content: center;*/
   align-items: center;
   font-family: sans-serif;
   height: 100%;
@@ -42,10 +43,23 @@ html, body {
   width: 100%;
 }
 
-.conference {
+.conference, .ticket {
+  width: 800px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.conference {
+  margin-top: 100px;
+}
+
+.conference > div {
+  margin: 4px;
+}
+
+.push-righty {
+  margin-left: 20px;
 }
 
 .push-right {
@@ -56,16 +70,34 @@ html, body {
   margin-left: 80px;
 }
 
+input, button, textarea {
+	font-weight: none;
+ 	padding: 6px 8px;
+ 	margin: 8px 0;
+	box-sizing: border-box;
+	border: 1px solid gray;
+	border-radius: 9px;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+option {
+  padding: 6px 8px;
+}
+
 .select-style {
     border: 1px solid #ccc;
-    width: 280px;
+    width: 270px;
     border-radius: 3px;
     overflow: hidden;
+    background-color: gray;
 }
 
 .select-style select {
-    padding: 5px 8px;
-    width: 130%;
+    color: white;
+    padding: 6px 8px;
     border: none;
     box-shadow: none;
     background: transparent;

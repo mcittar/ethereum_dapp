@@ -21,7 +21,6 @@ class Container extends React.Component {
           accounts={ this.props.accounts }/>
 
         <Ticket Conference={ this.props.Conference }
-          registrants={ this.state.registrants }
           ticketPrice={ this.props.ticketPrice }
           accounts={ this.props.web3.eth.accounts }/>
 

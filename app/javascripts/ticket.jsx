@@ -4,7 +4,7 @@ class Ticket extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      registrants: this.props.registrants,
+      registrants: 0,
       ticketBuyer: this.props.accounts[1],
       ticketRefunder: this.props.accounts[1],
       accounts: this.props.accounts,
@@ -31,9 +31,17 @@ class Ticket extends React.Component{
       return this.props.Conference.registrantsPaid.call(this.state.ticketBuyer);
     })).then(valuePaid => {
       if (valuePaid.toNumber() === parseInt(this.props.ticketPrice)) {
-        this.setState({ msgResult: "Purchase successful" });
+        this.setState({ msgResult: "Purchase successful" }, () => {
+          setTimeout(() => {
+            this.setState({ msgResult: "" });
+          }, 2000);
+        });
       } else {
-        this.setState({ msgResult: "Purchase failed" });
+        this.setState({ msgResult: "Purchase failed" }, () => {
+          setTimeout(() => {
+            this.setState({ msgResult: "" });
+          }, 2000);
+        });
       }
     });
   }
@@ -42,7 +50,11 @@ class Ticket extends React.Component{
     this.props.Conference.registrantsPaid.call(this.state.ticketRefunder)
     .then(result => {
       if (result.toNumber() === 0) {
-        this.setState({ msgResult: "Buyer is not registered - no refund!" });
+        this.setState({ msgResult: "Buyer is not registered - no refund!" }, () => {
+          setTimeout(() => {
+            this.setState({ msgResult: "" });
+          }, 2000);
+        });
       } else {
         this.props.Conference.refundTicket(this.state.ticketRefunder,
           this.props.ticketPrice,
@@ -55,9 +67,17 @@ class Ticket extends React.Component{
           );
         }).then(valuePaid => {
           if (valuePaid.toNumber() === 0) {
-          this.setState({ msgResult: "Refund Successful" });
+          this.setState({ msgResult: "Refund Successful" }, () => {
+            setTimeout(() => {
+              this.setState({ msgResult: "" });
+            }, 2000);
+          });
           } else {
-            this.setState({ msgResult: "Refund failed" });
+            this.setState({ msgResult: "Refund failed" }, () => {
+              setTimeout(() => {
+                this.setState({ msgResult: "" });
+              }, 2000);
+            });
           }
         });
       }
@@ -73,27 +93,37 @@ class Ticket extends React.Component{
     }
 
     return(
-      <section>
-        { this.state.registrants }<br></br>
-        { this.state.msgResult }
-        
-        <div className='select-style'>
-          <select onChange={ this.updateAttribute("ticketBuyer") }
-                  value={ this.state.ticketBuyer }>
-                  { options }
-          </select>
+      <section className='ticket'>
+
+        <div>
+          <span>Registrants:</span><span className='push-right'>{ this.state.registrants }</span>
         </div>
 
-        <button onClick={ this.buyTicket }>Buy Ticket</button><br></br>
-
-        <div className='select-style'>
-          <select onChange={ this.updateAttribute("ticketRefunder") }
-                  value={ this.state.ticketRefunder }>
-                  { options }
-          </select>
+        <div>
+          <span>Buyer Address: </span>
+          <span className='select-style push-righty'>
+            <select onChange={ this.updateAttribute("ticketBuyer") }
+                    value={ this.state.ticketBuyer }>
+                    { options }
+            </select>
+          </span>
+          <button className='push-righty' onClick={ this.buyTicket }>Buy Ticket</button><br></br>
         </div>
 
-        <button onClick={ this.refundTicket }>Refund Ticket</button><br></br>
+        <div>
+          <span>Refunder Address: </span>
+          <span className='select-style push-righty'>
+            <select onChange={ this.updateAttribute("ticketRefunder") }
+                    value={ this.state.ticketRefunder }>
+                    { options }
+            </select>
+          </span>
+
+          <button className='push-righty' onClick={ this.refundTicket }>Refund Ticket</button><br></br>
+        </div>
+
+        <div>{ this.state.msgResult }</div>
+
       </section>
     );
   }

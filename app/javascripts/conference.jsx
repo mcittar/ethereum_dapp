@@ -57,16 +57,20 @@ class Conference extends React.Component {
           <span>Contract deployed at:</span><span className='push-right'>{ this.props.Conference.address }</span>
         </div>
         <div>
+          <span>Conference Organizer:</span><span className='push-righty'>{ this.state.organizer }</span>
+        </div>
+        <div>
           <span>Max Attendees:</span><span className='push-righter'>{ this.state.quota }</span>
         </div>
         <div>
-          <span>Change Quota Amount: </span>
-          <input onChange={ this.updateQuota }></input>
-          <button onClick={ this.changeQuota }>Change</button>
-          { this.state.msgResult }
+          <span>Change Attendee Quota: </span>
+          <span className='push-right'>
+            <input onChange={ this.updateQuota }></input>
+            <button className='push-righty' onClick={ this.changeQuota }>Change</button>
+          </span>
         </div>
+        { this.state.msgResult }
 
-        { this.state.organizer }<br></br>
       </section>
     );
   }
