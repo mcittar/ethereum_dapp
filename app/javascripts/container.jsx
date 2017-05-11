@@ -16,7 +16,8 @@ class Container extends React.Component {
       accounts: this.props.web3.eth.accounts,
       ticketBuyer: "",
       ticketRefunder: "",
-      wallet: ""
+      wallet: "",
+      privateKey: ""
     };
     this.changeQuota = this.changeQuota.bind(this);
     this.update = this.update.bind(this);
@@ -24,6 +25,7 @@ class Container extends React.Component {
     this.updateAttribute = this.updateAttribute.bind(this);
     this.refundTicket = this.refundTicket.bind(this);
     this.createWallet = this.createWallet.bind(this);
+    this.fundEth = this.fundEth.bind(this);
   }
 
   componentWillMount(){
@@ -116,8 +118,15 @@ class Container extends React.Component {
       ks.keyFromPassword(this.state.password, (aerr, pwDerivedKey) => {
         if (aerr) throw aerr;
         ks.generateNewAddress(pwDerivedKey);
+
         let address = ks.getAddresses()[0];
         this.setState({ wallet: "0x" + address});
+
+        let privateKey = ks.exportPrivateKey(address, pwDerivedKey);
+        this.setState({ privateKey });
+
+        let balance = this.getBalance(address);
+        this.setState({ balance });
 
         ks.passwordProvider = function (callback) {
           let pw = prompt("Please enter password", "Password");
@@ -128,7 +137,6 @@ class Container extends React.Component {
       });
     });
 
-		// $("#wallet").html("0x"+address);
 		// $("#privateKey").html(privateKey);
 		// $("#balance").html(getBalance(address));
   }
@@ -148,6 +156,20 @@ class Container extends React.Component {
       .getBalance(address).toNumber(), 'ether');
   }
 
+  fundEth() {
+  	let fromAddr = this.state.accounts[0]; // default owner address of client
+  	let toAddr = this.state.wallet;
+  	let valueEth = 1;
+  	let value = parseFloat(valueEth)*1.0e18;
+  	let gasPrice = 1000000000000;
+  	let gas = 50000;
+  	this.props.web3.eth.sendTransaction({from: fromAddr, to: toAddr, value: value},
+      (err, txhash) => {
+  	  if (err) console.log('ERROR: ' + err);
+  	  console.log('txhash: ' + txhash + " (" + valueEth + " in ETH sent)");
+      this.setState({ balance: this.getBalance(toAddr) });
+  	});
+  }
 
   render() {
     let options;
@@ -178,7 +200,10 @@ class Container extends React.Component {
         <button onClick={ this.refundTicket }>Refund Ticket</button><br></br>
         <input onChange={ this.updateAttribute("password") }></input>
         <button onClick={ this.createWallet }>Create Wallet</button><br></br>
-        { this.state.wallet }
+        { this.state.wallet }<br></br>
+        { this.state.privateKey }<br></br>
+        { this.state.balance }
+        <button onClick={ this.fundEth }>Fund 1 Ether</button><br></br>
       </div>
     );
   }
