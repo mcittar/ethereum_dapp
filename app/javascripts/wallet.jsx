@@ -9,7 +9,8 @@ class Wallet extends React.Component{
       wallet: "",
       privateKey: "",
       password: "",
-      accounts: this.props.accounts
+      accounts: this.props.accounts,
+      balance: ""
     };
     this.createWallet = this.createWallet.bind(this);
     this.fundEth = this.fundEth.bind(this);
@@ -66,7 +67,7 @@ class Wallet extends React.Component{
   }
 
   fundEth() {
-  	let fromAddr = this.props.accounts[0]; // default owner address of client
+  	let fromAddr = this.props.web3.eth.accounts[0];
   	let toAddr = this.state.wallet;
   	let valueEth = 1;
   	let value = parseFloat(valueEth)*1.0e18;
