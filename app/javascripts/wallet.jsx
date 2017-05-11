@@ -58,7 +58,6 @@ class Wallet extends React.Component{
 
     this.props.web3.setProvider(web3Provider);
     this.setState({ accounts: this.props.web3.eth.accounts });
-    console.log(this.props.web3.eth.accounts);
   }
 
   getBalance(address) {
