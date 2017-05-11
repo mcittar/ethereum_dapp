@@ -18,7 +18,7 @@ class Container extends React.Component {
       <div className='app'>
 
         <Conference Conference={ this.props.Conference }
-          accounts={ this.state.accounts }/>
+          accounts={ this.props.accounts }/>
 
         <Ticket Conference={ this.props.Conference }
           registrants={ this.state.registrants }

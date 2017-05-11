@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
       web3={ web3 }
       Conference={ conference }
       ticketPrice={ ticketPrice }
+      accounts={ accounts }
       />, root);
-    var initialBalance = web3.eth.getBalance(conference.address).toNumber();
   });
 
 });

@@ -33,10 +33,18 @@ class Conference extends React.Component {
   			return this.props.Conference.quota.call();
   		}).then((quota) => {
   			if (quota.toNumber() === this.state.newQuota) {
-  				this.setState({ msgResult: "Change successful" });
+  				this.setState({ msgResult: "Change successful" }, () => {
+            setTimeout(() => {
+              this.setState({ msgResult: "" });
+            }, 2000);
+          });
           this.setState({ quota: quota.toNumber() });
   			} else {
-  				this.setState({ msgResult: "Change failed" });
+  				this.setState({ msgResult: "Change failed" }, () => {
+            setTimeout(() => {
+              this.setState({ msgResult: "" });
+            }, 2000);
+          });
   			}
 		});
   }
@@ -44,12 +52,20 @@ class Conference extends React.Component {
   render(){
 
     return(
-      <section>
-        { this.props.Conference.address }<br></br>
-        { this.state.quota }
-        <input onChange={ this.updateQuota }></input>
-        <button onClick={ this.changeQuota }>Update Value</button>
-        { this.state.msgResult }<br></br>
+      <section className='conference'>
+        <div>
+          <span>Contract deployed at:</span><span className='push-right'>{ this.props.Conference.address }</span>
+        </div>
+        <div>
+          <span>Max Attendees:</span><span className='push-righter'>{ this.state.quota }</span>
+        </div>
+        <div>
+          <span>Change Quota Amount: </span>
+          <input onChange={ this.updateQuota }></input>
+          <button onClick={ this.changeQuota }>Change</button>
+          { this.state.msgResult }
+        </div>
+
         { this.state.organizer }<br></br>
       </section>
     );

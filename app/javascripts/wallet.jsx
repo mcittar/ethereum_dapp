@@ -71,8 +71,6 @@ class Wallet extends React.Component{
   	let toAddr = this.state.wallet;
   	let valueEth = 1;
   	let value = parseFloat(valueEth)*1.0e18;
-  	let gasPrice = 1000000000000;
-  	let gas = 50000;
   	this.props.web3.eth.sendTransaction({from: fromAddr, to: toAddr, value: value},
       (err, txhash) => {
   	  if (err) console.log('ERROR: ' + err);

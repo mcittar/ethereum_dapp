@@ -76,15 +76,23 @@ class Ticket extends React.Component{
       <section>
         { this.state.registrants }<br></br>
         { this.state.msgResult }
-        <select onChange={ this.updateAttribute("ticketBuyer") }
-                value={ this.state.ticketBuyer }>
-                { options }
-        </select>
+        
+        <div className='select-style'>
+          <select onChange={ this.updateAttribute("ticketBuyer") }
+                  value={ this.state.ticketBuyer }>
+                  { options }
+          </select>
+        </div>
+
         <button onClick={ this.buyTicket }>Buy Ticket</button><br></br>
-        <select onChange={ this.updateAttribute("ticketRefunder") }
-                value={ this.state.ticketRefunder }>
-                { options }
-        </select>
+
+        <div className='select-style'>
+          <select onChange={ this.updateAttribute("ticketRefunder") }
+                  value={ this.state.ticketRefunder }>
+                  { options }
+          </select>
+        </div>
+
         <button onClick={ this.refundTicket }>Refund Ticket</button><br></br>
       </section>
     );
