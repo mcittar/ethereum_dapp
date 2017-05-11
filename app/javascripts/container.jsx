@@ -2,6 +2,7 @@ import React from 'react';
 import lightwallet from 'eth-lightwallet';
 import HookedWeb3Provider from 'hooked-web3-provider';
 import Conference from './conference';
+import Ticket from './ticket';
 
 
 class Container extends React.Component {
@@ -9,25 +10,14 @@ class Container extends React.Component {
     super(props);
     this.state = {
       msgResult: "",
-      newQuota: "",
-      registrants: 0,
       password: "",
       accounts: this.props.web3.eth.accounts,
-      ticketBuyer: "",
-      ticketRefunder: "",
       wallet: "",
       privateKey: ""
     };
-    this.buyTicket = this.buyTicket.bind(this);
     this.updateAttribute = this.updateAttribute.bind(this);
-    this.refundTicket = this.refundTicket.bind(this);
     this.createWallet = this.createWallet.bind(this);
     this.fundEth = this.fundEth.bind(this);
-  }
-
-  componentWillMount(){
-    this.setState({ ticketBuyer: this.state.accounts[1] });
-    this.setState({ ticketRefunder: this.state.accounts[1] });
   }
 
   updateAttribute(attribute){
@@ -36,51 +26,7 @@ class Container extends React.Component {
     };
   }
 
-  buyTicket() {
-	  this.props.Conference.buyTicket(
-      { from: this.state.ticketBuyer,
-        value: this.props.ticketPrice } )
-    .then(() => this.props.Conference.numRegistrants.call()
-    .then(registrants => {
-      this.setState({ registrants: registrants.toNumber() });
-      return this.props.Conference.registrantsPaid.call(this.state.ticketBuyer);
-    })).then(valuePaid => {
-      if (valuePaid.toNumber() === parseInt(this.props.ticketPrice)) {
-        this.setState({ msgResult: "Purchase successful" });
-      } else {
-        this.setState({ msgResult: "Purchase failed" });
-      }
-    });
-  }
-
-  refundTicket() {
-    this.props.Conference.registrantsPaid.call(this.state.ticketRefunder)
-    .then(result => {
-      if (result.toNumber() === 0) {
-        this.setState({ msgResult: "Buyer is not registered - no refund!" });
-      } else {
-        this.props.Conference.refundTicket(this.state.ticketRefunder,
-          this.props.ticketPrice,
-        { from: this.state.accounts[0]} ).then(() => {
-          return this.props.Conference.numRegistrants.call();
-        }).then(num => {
-          this.setState({ registrants: num.toNumber() });
-          return this.props.Conference.registrantsPaid.call(
-            this.state.ticketRefunder
-          );
-        }).then(valuePaid => {
-          if (valuePaid.toNumber() === 0) {
-          this.setState({ msgResult: "Refund Successful" });
-          } else {
-            this.setState({ msgResult: "Refund failed" });
-          }
-        });
-      }
-    });
-  }
-
   createWallet() {
-    // this.setState({ secretSeed });
     lightwallet.keystore.createVault({
       password: this.state.password,
     }, (err, ks) => {
@@ -138,32 +84,20 @@ class Container extends React.Component {
   }
 
   render() {
-    let options;
-    if (this.state.accounts){
-      options = this.state.accounts.slice(1).map(account => {
-        return <option key={ account } value={ account }>{ account }</option>;
-      });
-    }
 
     return (
       <div className='app'>
 
         <Conference Conference={ this.props.Conference }
+          accounts={ this.state.accounts }/>
+
+        <Ticket Conference={ this.props.Conference }
           registrants={ this.state.registrants }
+          ticketPrice={ this.props.ticketPrice }
           accounts={ this.state.accounts }/>
 
         { this.state.msgResult }
 
-        <select onChange={ this.updateAttribute("ticketBuyer") }
-                value={ this.state.ticketBuyer }>
-                { options }
-        </select>
-        <button onClick={ this.buyTicket }>Buy Ticket</button><br></br>
-        <select onChange={ this.updateAttribute("ticketRefunder") }
-                value={ this.state.ticketRefunder }>
-                { options }
-        </select>
-        <button onClick={ this.refundTicket }>Refund Ticket</button><br></br>
         <input onChange={ this.updateAttribute("password") }></input>
         <button onClick={ this.createWallet }>Create Wallet</button><br></br>
         { this.state.wallet }<br></br>

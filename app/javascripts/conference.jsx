@@ -6,8 +6,8 @@ class Conference extends React.Component {
     this.state = {
       quota: "",
       organizer: "",
-      registrants: this.props.registrants,
-      newQuota: ""
+      newQuota: "",
+      msgResult: ""
     };
     this.updateQuota = this.updateQuota.bind(this);
     this.changeQuota = this.changeQuota.bind(this);
@@ -48,9 +48,9 @@ class Conference extends React.Component {
         { this.props.Conference.address }<br></br>
         { this.state.quota }
         <input onChange={ this.updateQuota }></input>
-        <button onClick={ this.changeQuota }>Update Value</button><br></br>
+        <button onClick={ this.changeQuota }>Update Value</button>
+        { this.state.msgResult }<br></br>
         { this.state.organizer }<br></br>
-        { this.props.registrants }<br></br>
       </section>
     );
   }
