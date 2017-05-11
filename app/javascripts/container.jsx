@@ -1,16 +1,15 @@
 import React from 'react';
 import lightwallet from 'eth-lightwallet';
 import HookedWeb3Provider from 'hooked-web3-provider';
+import Conference from './conference';
 
 
 class Container extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      quota: 500,
       msgResult: "",
       newQuota: "",
-      organizer: "",
       registrants: 0,
       password: "",
       accounts: this.props.web3.eth.accounts,
@@ -19,8 +18,6 @@ class Container extends React.Component {
       wallet: "",
       privateKey: ""
     };
-    this.changeQuota = this.changeQuota.bind(this);
-    this.update = this.update.bind(this);
     this.buyTicket = this.buyTicket.bind(this);
     this.updateAttribute = this.updateAttribute.bind(this);
     this.refundTicket = this.refundTicket.bind(this);
@@ -29,36 +26,8 @@ class Container extends React.Component {
   }
 
   componentWillMount(){
-    this.props.Conference.quota.call().then((quota) => {
-      this.setState({ quota: quota.toNumber() });
-    });
-    this.props.Conference.organizer.call().then((organizer) => {
-      this.setState({ organizer });
-    });
-    this.props.Conference.numRegistrants.call().then((registrants) => {
-      this.setState({ registrants: registrants.toNumber() });
-    });
     this.setState({ ticketBuyer: this.state.accounts[1] });
     this.setState({ ticketRefunder: this.state.accounts[1] });
-  }
-
-  changeQuota() {
-  	this.props.Conference.changeQuota(
-      this.state.newQuota, { from: this.state.accounts[0] })
-      .then(() => {
-  			return this.props.Conference.quota.call();
-  		}).then((quota) => {
-  			if (quota.toNumber() === this.state.newQuota) {
-  				this.setState({ msgResult: "Change successful" });
-          this.setState({ quota: quota.toNumber() });
-  			} else {
-  				this.setState({ msgResult: "Change failed" });
-  			}
-		});
-  }
-
-  update(event){
-    this.setState({ newQuota: parseInt(event.currentTarget.value) });
   }
 
   updateAttribute(attribute){
@@ -136,9 +105,6 @@ class Container extends React.Component {
         this.switchToHooked3(ks);
       });
     });
-
-		// $("#privateKey").html(privateKey);
-		// $("#balance").html(getBalance(address));
   }
 
   switchToHooked3(_keystore) {
@@ -181,13 +147,13 @@ class Container extends React.Component {
 
     return (
       <div className='app'>
-        { this.props.Conference.address }<br></br>
-        { this.state.quota }<br></br>
-        { this.state.organizer }<br></br>
-        { this.state.registrants }<br></br>
+
+        <Conference Conference={ this.props.Conference }
+          registrants={ this.state.registrants }
+          accounts={ this.state.accounts }/>
+
         { this.state.msgResult }
-        <input onChange={ this.update }></input>
-        <button onClick={ this.changeQuota }>Update Value</button><br></br>
+
         <select onChange={ this.updateAttribute("ticketBuyer") }
                 value={ this.state.ticketBuyer }>
                 { options }
