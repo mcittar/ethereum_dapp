@@ -1,15 +1,11 @@
-# truffle-init-webpack
-Example webpack project with Truffle. Includes contracts, migrations, tests, user interface and webpack build pipeline.
+# Demo Ticket Buying DApp
+Small DApp built using truffle, testrpc, web3, and react for the ethereum blockchain platform
 
-## Usage
+## Getting Started
+To use this demo, first run `npm install` in the root directory
 
-To initialize a project with this exapmple, run `truffle init webpack` inside an empty directory.
+Boot up your private blockchain by running `testrpc`
 
-## Building and the frontend
+Once your test network is up, run `truffle compile`, `truffle migrate` and `truffle deploy` to deploy the smart contract to the blockchain
 
-1. First run `truffle compile`, then run `truffle migrate` to deploy the contracts onto your network of choice (default "development").
-1. Then run `npm run dev` to build the app and serve it on http://localhost:8080
-
-## Possible upgrades
-
-* Use the webpack hotloader to sense when contracts or javascript have been recompiled and rebuild the application. Contributions welcome!
+Then run `npm run dev` to build the app and serve it on http://localhost:8080
