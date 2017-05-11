@@ -1,6 +1,6 @@
 import React from 'react';
-import lightwallet from './lightwallet.min.js';
-import { switchToHooked3 } from './hooked-web3-provider.min.js';
+import lightwallet from 'eth-lightwallet';
+import HookedWeb3Provider from 'hooked-web3-provider';
 
 
 class Container extends React.Component {
@@ -16,7 +16,7 @@ class Container extends React.Component {
       accounts: this.props.web3.eth.accounts,
       ticketBuyer: "",
       ticketRefunder: "",
-      secretSeed: ""
+      wallet: ""
     };
     this.changeQuota = this.changeQuota.bind(this);
     this.update = this.update.bind(this);
@@ -109,43 +109,50 @@ class Container extends React.Component {
   }
 
   createWallet() {
+    // this.setState({ secretSeed });
+    lightwallet.keystore.createVault({
+      password: this.state.password,
+    }, (err, ks) => {
+      ks.keyFromPassword(this.state.password, (aerr, pwDerivedKey) => {
+        if (aerr) throw aerr;
+        ks.generateNewAddress(pwDerivedKey);
+        let address = ks.getAddresses()[0];
+        this.setState({ wallet: "0x" + address});
 
-	let secretSeed = lightwallet.keystore.generateRandomSeed();
+        ks.passwordProvider = function (callback) {
+          let pw = prompt("Please enter password", "Password");
+          callback(null, pw);
+        };
 
-  this.setState({ secretSeed });
-	lightwallet.keystore.deriveKeyFromPassword(this.state.password,
-    (err, pwDerivedKey) => {
-		console.log("createWallet");
-    console.log(secretSeed);
-		let keystore = new lightwallet.keystore(secretSeed, pwDerivedKey);
-
-		// generate one new address/private key pairs
-		// the corresponding private keys are also encrypted
-		keystore.generateNewAddress(pwDerivedKey);
-
-		let address = keystore.getAddresses()[0];
-
-		let privateKey = keystore.exportPrivateKey(address, pwDerivedKey);
-
-		console.log(address);
+        this.switchToHooked3(ks);
+      });
+    });
 
 		// $("#wallet").html("0x"+address);
 		// $("#privateKey").html(privateKey);
 		// $("#balance").html(getBalance(address));
+  }
 
+  switchToHooked3(_keystore) {
+    let web3Provider = new HookedWeb3Provider({
+      host: "http://localhost:8545",
+      transaction_signer: _keystore
+    });
 
-		// Now set ks as transaction_signer in the hooked web3 provider
-		// and you can start using web3 using the keys/addresses in ks!
-		switchToHooked3(keystore);
+    this.props.web3.setProvider(web3Provider);
+    this.setState({ account: this.props.web3.eth.accounts });
+  }
 
-	});
-}
+  getBalance(address) {
+  	return this.props.web3.fromWei(this.props.web3.eth
+      .getBalance(address).toNumber(), 'ether');
+  }
 
 
   render() {
     let options;
     if (this.state.accounts){
-      options = this.props.accounts.slice(1).map(account => {
+      options = this.state.accounts.slice(1).map(account => {
         return <option key={ account } value={ account }>{ account }</option>;
       });
     }
@@ -171,6 +178,7 @@ class Container extends React.Component {
         <button onClick={ this.refundTicket }>Refund Ticket</button><br></br>
         <input onChange={ this.updateAttribute("password") }></input>
         <button onClick={ this.createWallet }>Create Wallet</button><br></br>
+        { this.state.wallet }
       </div>
     );
   }
