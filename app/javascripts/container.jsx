@@ -17,6 +17,10 @@ class Container extends React.Component {
     return (
       <div className='app'>
 
+        <div className='header'>
+          Conference DApp
+        </div>
+
         <Conference Conference={ this.props.Conference }
           accounts={ this.props.accounts }/>
 

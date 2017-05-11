@@ -53,6 +53,7 @@ class Conference extends React.Component {
 
     return(
       <section className='conference'>
+
         <div>
           <span>Contract deployed at:</span><span className='push-right'>{ this.props.Conference.address }</span>
         </div>
@@ -70,7 +71,7 @@ class Conference extends React.Component {
           </span>
         </div>
         { this.state.msgResult }
-
+      
       </section>
     );
   }

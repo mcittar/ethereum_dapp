@@ -8,7 +8,7 @@ class Ticket extends React.Component{
       ticketBuyer: this.props.accounts[1],
       ticketRefunder: this.props.accounts[1],
       accounts: this.props.accounts,
-      msgResult: ""
+      msgResult: " "
     };
     this.refundTicket = this.refundTicket.bind(this);
     this.buyTicket = this.buyTicket.bind(this);
@@ -94,6 +94,11 @@ class Ticket extends React.Component{
 
     return(
       <section className='ticket'>
+        <hr></hr>
+        
+        <div className='header'>
+          Buy a Ticket
+        </div>
 
         <div>
           <span>Registrants:</span><span className='push-right'>{ this.state.registrants }</span>
@@ -110,8 +115,14 @@ class Ticket extends React.Component{
           <button className='push-righty' onClick={ this.buyTicket }>Buy Ticket</button><br></br>
         </div>
 
+        <hr></hr>
+
+        <div className='header'>
+          Refund a Ticket
+        </div>
+
         <div>
-          <span>Refunder Address: </span>
+          <span>Refund Address: </span>
           <span className='select-style push-righty'>
             <select onChange={ this.updateAttribute("ticketRefunder") }
                     value={ this.state.ticketRefunder }>
@@ -123,6 +134,8 @@ class Ticket extends React.Component{
         </div>
 
         <div>{ this.state.msgResult }</div>
+
+        <hr></hr>
 
       </section>
     );

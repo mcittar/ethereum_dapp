@@ -10,7 +10,7 @@ class Wallet extends React.Component{
       privateKey: "",
       password: "",
       accounts: this.props.accounts,
-      balance: ""
+      balance: 0
     };
     this.createWallet = this.createWallet.bind(this);
     this.fundEth = this.fundEth.bind(this);
@@ -82,13 +82,31 @@ class Wallet extends React.Component{
   render(){
 
     return(
-      <section>
-        <input onChange={ this.updateAttribute("password") }></input>
-        <button onClick={ this.createWallet }>Create Wallet</button><br></br>
-        { this.state.wallet }<br></br>
-        { this.state.privateKey }<br></br>
-        { this.state.balance }
-        <button onClick={ this.fundEth }>Fund 1 Ether</button><br></br>
+      <section className='wallet'>
+        <div className='header'>
+          Create a Wallet
+        </div>
+
+        <div>
+          <span>Password:</span>
+          <span className='push-righty'><input onChange={ this.updateAttribute("password") }></input></span>
+          <span className='push-righty'><button onClick={ this.createWallet }>Create Wallet</button></span>
+        </div>
+
+        <div>
+          <span>Wallet Address: </span><span className='push-right'>{ this.state.wallet }</span>
+        </div>
+
+        <div>
+          <span>Private Key: </span><span className='push-righter'>{ this.state.privateKey }</span>
+        </div>
+
+        <div>
+          <span>Wallet Balance: </span>
+          <span className='push-right'>{ this.state.balance } ETH</span>
+          <span className='push-right'><button onClick={ this.fundEth }>Fund 1 Ether</button></span>
+        </div>
+
       </section>
     );
   }

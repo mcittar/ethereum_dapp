@@ -23,6 +23,15 @@ input, textarea, button, select {
   appearance: none;
 }
 
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
 html, body {
   height: 100%;
 }
@@ -34,16 +43,14 @@ html, body {
   flex-direction: column;
   align-items: center;
   font-family: sans-serif;
-  height: 100%;
   width: 100%;
 }
 
 #root {
-  height: 100%;
   width: 100%;
 }
 
-.conference, .ticket {
+.conference, .ticket, .wallet {
   width: 800px;
   display: flex;
   flex-direction: column;
@@ -51,10 +58,10 @@ html, body {
 }
 
 .conference {
-  margin-top: 100px;
+  margin-top: 30px;
 }
 
-.conference > div {
+.conference > div, .wallet > div {
   margin: 4px;
 }
 
@@ -70,6 +77,15 @@ html, body {
   margin-left: 80px;
 }
 
+.push-bottom {
+  margin-bottom: 20px;
+}
+
+.header {
+  margin-bottom: 15px;
+  font-size: 30px;
+}
+
 input, button, textarea {
 	font-weight: none;
  	padding: 6px 8px;
@@ -80,6 +96,7 @@ input, button, textarea {
 }
 
 button:hover {
+  background-color: #1c1b1a;
   cursor: pointer;
 }
 
