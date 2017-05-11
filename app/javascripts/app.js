@@ -1,6 +1,5 @@
-// Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
-import { default as Web3} from 'web3';
+import { default as Web3 } from 'web3';
 import conferenceArtifacts from '../../build/contracts/Conference.json';
 import { default as contract } from 'truffle-contract';
 import React from 'react';
@@ -25,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
   var ticketPrice = web3.toWei(.05, 'ether');
 
   Conference.new({ from: accounts[0], gas: 4712388 }).then(conference => {
-    conferenceContract = conference;
     const root = document.getElementById('root');
-    ReactDOM.render(<Container accounts={ accounts }
-      Conference={ conferenceContract }
+    ReactDOM.render(<Container
+      web3={ web3 }
+      Conference={ conference }
       ticketPrice={ ticketPrice }
       />, root);
     var initialBalance = web3.eth.getBalance(conference.address).toNumber();

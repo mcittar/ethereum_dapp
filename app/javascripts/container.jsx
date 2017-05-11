@@ -1,4 +1,6 @@
 import React from 'react';
+import lightwallet from './lightwallet.min.js';
+import { switchToHooked3 } from './hooked-web3-provider.min.js';
 
 
 class Container extends React.Component {
@@ -10,14 +12,18 @@ class Container extends React.Component {
       newQuota: "",
       organizer: "",
       registrants: 0,
-      ticketBuyer: this.props.accounts[1],
-      ticketRefunder: this.props.accounts[1]
+      password: "",
+      accounts: this.props.web3.eth.accounts,
+      ticketBuyer: "",
+      ticketRefunder: "",
+      secretSeed: ""
     };
     this.changeQuota = this.changeQuota.bind(this);
     this.update = this.update.bind(this);
     this.buyTicket = this.buyTicket.bind(this);
-    this.updateTicket = this.updateTicket.bind(this);
+    this.updateAttribute = this.updateAttribute.bind(this);
     this.refundTicket = this.refundTicket.bind(this);
+    this.createWallet = this.createWallet.bind(this);
   }
 
   componentWillMount(){
@@ -30,11 +36,13 @@ class Container extends React.Component {
     this.props.Conference.numRegistrants.call().then((registrants) => {
       this.setState({ registrants: registrants.toNumber() });
     });
+    this.setState({ ticketBuyer: this.state.accounts[1] });
+    this.setState({ ticketRefunder: this.state.accounts[1] });
   }
 
   changeQuota() {
   	this.props.Conference.changeQuota(
-      this.state.newQuota, { from: this.props.accounts[0] })
+      this.state.newQuota, { from: this.state.accounts[0] })
       .then(() => {
   			return this.props.Conference.quota.call();
   		}).then((quota) => {
@@ -51,7 +59,7 @@ class Container extends React.Component {
     this.setState({ newQuota: parseInt(event.currentTarget.value) });
   }
 
-  updateTicket(attribute){
+  updateAttribute(attribute){
     return (event) => {
       this.setState({ [attribute]: event.currentTarget.value });
     };
@@ -82,7 +90,7 @@ class Container extends React.Component {
       } else {
         this.props.Conference.refundTicket(this.state.ticketRefunder,
           this.props.ticketPrice,
-        { from: this.props.accounts[0]} ).then(() => {
+        { from: this.state.accounts[0]} ).then(() => {
           return this.props.Conference.numRegistrants.call();
         }).then(num => {
           this.setState({ registrants: num.toNumber() });
@@ -100,33 +108,30 @@ class Container extends React.Component {
     });
   }
 
-  createWallet(password) {
+  createWallet() {
 
-	var msgResult;
+	let secretSeed = lightwallet.keystore.generateRandomSeed();
 
-	var secretSeed = lightwallet.keystore.generateRandomSeed();
-
-	$("#seed").html(secretSeed);
-
-	lightwallet.keystore.deriveKeyFromPassword(password, function (err, pwDerivedKey) {
-
+  this.setState({ secretSeed });
+	lightwallet.keystore.deriveKeyFromPassword(this.state.password,
+    (err, pwDerivedKey) => {
 		console.log("createWallet");
-
-		var keystore = new lightwallet.keystore(secretSeed, pwDerivedKey);
+    console.log(secretSeed);
+		let keystore = new lightwallet.keystore(secretSeed, pwDerivedKey);
 
 		// generate one new address/private key pairs
 		// the corresponding private keys are also encrypted
 		keystore.generateNewAddress(pwDerivedKey);
 
-		var address = keystore.getAddresses()[0];
+		let address = keystore.getAddresses()[0];
 
-		var privateKey = keystore.exportPrivateKey(address, pwDerivedKey);
+		let privateKey = keystore.exportPrivateKey(address, pwDerivedKey);
 
 		console.log(address);
 
-		$("#wallet").html("0x"+address);
-		$("#privateKey").html(privateKey);
-		$("#balance").html(getBalance(address));
+		// $("#wallet").html("0x"+address);
+		// $("#privateKey").html(privateKey);
+		// $("#balance").html(getBalance(address));
 
 
 		// Now set ks as transaction_signer in the hooked web3 provider
@@ -139,11 +144,12 @@ class Container extends React.Component {
 
   render() {
     let options;
-    if (this.props.accounts){
+    if (this.state.accounts){
       options = this.props.accounts.slice(1).map(account => {
         return <option key={ account } value={ account }>{ account }</option>;
       });
     }
+
     return (
       <div className='app'>
         { this.props.Conference.address }<br></br>
@@ -153,16 +159,18 @@ class Container extends React.Component {
         { this.state.msgResult }
         <input onChange={ this.update }></input>
         <button onClick={ this.changeQuota }>Update Value</button><br></br>
-        <select onChange={ this.updateTicket("ticketBuyer") }
+        <select onChange={ this.updateAttribute("ticketBuyer") }
                 value={ this.state.ticketBuyer }>
                 { options }
         </select>
         <button onClick={ this.buyTicket }>Buy Ticket</button><br></br>
-        <select onChange={ this.updateTicket("ticketRefunder") }
+        <select onChange={ this.updateAttribute("ticketRefunder") }
                 value={ this.state.ticketRefunder }>
                 { options }
         </select>
         <button onClick={ this.refundTicket }>Refund Ticket</button><br></br>
+        <input onChange={ this.updateAttribute("password") }></input>
+        <button onClick={ this.createWallet }>Create Wallet</button><br></br>
       </div>
     );
   }
