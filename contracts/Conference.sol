@@ -31,16 +31,15 @@ contract Conference {
 
   function refundTicket(address recipient, uint amount) public {
     if (msg.sender != organizer) { return; }
-    if (registrantsPaid[recipient] == amount) {
-      address myAddress = this;
-      if (myAddress.balance >= amount) {
-        recipient.send(amount);
-        registrantsPaid[recipient] = 0;
-        numRegistrants--;
-        Refund(recipient, amount);
-      }
-    }
+    if (registrantsPaid[recipient] < amount) { throw; }
+    address myAddress = this;
+    if (myAddress.balance < amount) { throw; }
+    recipient.send(amount);
+    registrantsPaid[recipient] = 0;
+    numRegistrants--;
+    Refund(recipient, amount);
   }
+
   function destroy() {
     if (msg.sender == organizer) {
       suicide(organizer);

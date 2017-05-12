@@ -56,7 +56,8 @@ contract('Conference', function(accounts) {
             assert.equal(num, 1, "there should be 1 registrant");
             return conference.registrantsPaid.call(accounts[1]);
         }).then(function(amount) {
-            assert.equal(amount.toNumber(), ticketPrice, "Sender's paid but is not listed");
+            assert(amount.equals(ticketPrice))
+            // assert.equal(amount.toNumber(), ticketPrice, "Sender's paid but is not listed");
             done();
         }).catch(done);
     }).catch(done);

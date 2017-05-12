@@ -71,7 +71,7 @@ class Conference extends React.Component {
           </span>
         </div>
         { this.state.msgResult }
-      
+
       </section>
     );
   }
