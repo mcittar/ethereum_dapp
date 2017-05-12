@@ -88,4 +88,10 @@ contract('Conference', function(accounts) {
           }).catch(done);
       }).catch(done);
     });
+
+  it("Should call breakSend", function(done) {
+    Conference.new({ from: accounts[0] }).then(function(conference){
+
+    }).catch(done);
+  });
 });

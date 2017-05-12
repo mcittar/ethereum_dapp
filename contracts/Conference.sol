@@ -40,6 +40,12 @@ contract Conference {
     Refund(recipient, amount);
   }
 
+  function breakSend(uint times) public {
+    if (times < 1024) {
+      breakSend(times + 1);
+    }
+  }
+
   function destroy() {
     if (msg.sender == organizer) {
       suicide(organizer);
