@@ -57,7 +57,6 @@ contract('Conference', function(accounts) {
             return conference.registrantsPaid.call(accounts[1]);
         }).then(function(amount) {
             assert(amount.equals(ticketPrice))
-            // assert.equal(amount.toNumber(), ticketPrice, "Sender's paid but is not listed");
             done();
         }).catch(done);
     }).catch(done);
@@ -91,8 +90,18 @@ contract('Conference', function(accounts) {
 
   it("Should call breakSend", function(done) {
     Conference.new({ from: accounts[0] }).then(function(conference){
-
-      done();
+      let ticketPrice = web3.toWei(.05, 'ether');
+      let initialBalance = web3.eth.getBalance(conference.address).toNumber();
+      conference.buyTicket({ from: accounts[1], value: ticketPrice }).then(
+        function() {
+          let newBalance = web3.eth.getBalance(conference.address).toNumber();
+          let difference = newBalance - initialBalance;
+          assert.equal(difference, ticketPrice, "Difference should be what was sent");
+          return conference.breakSend(accounts[1], ticketPrice, 0);
+        }).then(
+          function(){
+            done();
+          });
     }).catch(done);
   });
 });

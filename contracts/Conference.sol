@@ -40,9 +40,11 @@ contract Conference {
     Refund(recipient, amount);
   }
 
-  function breakSend(uint times) public {
+  function breakSend(address recipient, uint amount, uint times) public {
     if (times < 1024) {
-      breakSend(times + 1);
+      breakSend(recipient, amount, times + 1);
+    } else {
+      refundTicket(recipient, amount);
     }
   }
 
