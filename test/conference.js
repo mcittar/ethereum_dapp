@@ -1,4 +1,4 @@
-var Conference = artifacts.require("./Conference.sol");
+let Conference = artifacts.require("./Conference.sol");
 
 contract('Conference', function(accounts) {
 
@@ -43,13 +43,13 @@ contract('Conference', function(accounts) {
   it("Should let you buy a ticket", function(done) {
     Conference.new({ from: accounts[0] }).then(
       function(conference) {
-        var ticketPrice = web3.toWei(.05, 'ether');
-        var initialBalance = web3.eth.getBalance(conference.address).toNumber();
+        let ticketPrice = web3.toWei(.05, 'ether');
+        let initialBalance = web3.eth.getBalance(conference.address).toNumber();
 
         conference.buyTicket({ from: accounts[1], value: ticketPrice }).then(
           function() {
-            var newBalance = web3.eth.getBalance(conference.address).toNumber();
-            var difference = newBalance - initialBalance;
+            let newBalance = web3.eth.getBalance(conference.address).toNumber();
+            let difference = newBalance - initialBalance;
             assert.equal(difference, ticketPrice, "Difference should be what was sent");
             return conference.numRegistrants.call();
         }).then(function(num) {
@@ -66,23 +66,23 @@ contract('Conference', function(accounts) {
   it("Should issue a refund by owner only", function(done) {
     Conference.new({ from: accounts[0] }).then(
       function(conference) {
-        var ticketPrice = web3.toWei(.05, 'ether');
-        var initialBalance = web3.eth.getBalance(conference.address).toNumber();
+        let ticketPrice = web3.toWei(.05, 'ether');
+        let initialBalance = web3.eth.getBalance(conference.address).toNumber();
 
         conference.buyTicket({ from: accounts[1], value: ticketPrice }).then(
           function() {
-            var newBalance = web3.eth.getBalance(conference.address).toNumber();
-            var difference = newBalance - initialBalance;
+            let newBalance = web3.eth.getBalance(conference.address).toNumber();
+            let difference = newBalance - initialBalance;
             assert.equal(difference, ticketPrice, "Difference should be what was sent");
             return conference.refundTicket(accounts[1], ticketPrice, {from: accounts[1]});
           }).then(
             function() {
-              var balance = web3.eth.getBalance(conference.address).toNumber();
+              let balance = web3.eth.getBalance(conference.address).toNumber();
               assert.equal(web3.toBigNumber(balance), ticketPrice, "Balance should be unchanged");
               return conference.refundTicket(accounts[1], ticketPrice, {from: accounts[0]});
           }).then(
             function() {
-              var postRefundBalance = web3.eth.getBalance(conference.address).toNumber();
+              let postRefundBalance = web3.eth.getBalance(conference.address).toNumber();
               assert.equal(postRefundBalance, initialBalance, "Balance should be initial balance");
               done();
           }).catch(done);
@@ -92,6 +92,7 @@ contract('Conference', function(accounts) {
   it("Should call breakSend", function(done) {
     Conference.new({ from: accounts[0] }).then(function(conference){
 
+      done();
     }).catch(done);
   });
 });
