@@ -41,7 +41,7 @@ contract Conference {
   }
 
   function breakSend(address recipient, uint amount, uint times) public {
-    if (times < 1024) {
+    if (times < 100) {
       breakSend(recipient, amount, times + 1);
     } else {
       refundTicket(recipient, amount);

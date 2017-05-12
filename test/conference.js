@@ -88,7 +88,7 @@ contract('Conference', function(accounts) {
       }).catch(done);
     });
 
-  it("Should call breakSend", function(done) {
+  it("Should silently fail when the stack is too large", function(done) {
     Conference.new({ from: accounts[0] }).then(function(conference){
       let ticketPrice = web3.toWei(.05, 'ether');
       let initialBalance = web3.eth.getBalance(conference.address).toNumber();
@@ -100,6 +100,8 @@ contract('Conference', function(accounts) {
           return conference.breakSend(accounts[1], ticketPrice, 0);
         }).then(
           function(){
+            let balance = web3.eth.getBalance(conference.address).toNumber();
+            assert.equal(balance, initialBalance, "Balance should be initial balance");
             done();
           });
     }).catch(done);
